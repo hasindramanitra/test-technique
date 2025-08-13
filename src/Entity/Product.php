@@ -3,8 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\Table(name: 'product')]
@@ -25,7 +29,24 @@ class Product
     private ?float $price = null;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull(message: "Le stock est obligatoire.")]
+    #[Assert\Type(
+        type: 'integer',
+        message: "Le stock doit être un nombre entier."
+    )]
+    #[Assert\PositiveOrZero(message: "Le stock doit être supérieur ou égal à 0.")]
     private ?int $stock = null;
+
+    /**
+     * @var Collection<int, PromoCode>
+     */
+    #[ORM\OneToMany(targetEntity: PromoCode::class, mappedBy: 'product')]
+    private Collection $promoCodes;
+
+    public function __construct()
+    {
+        $this->promoCodes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -76,6 +97,36 @@ class Product
     public function setStock(int $stock): static
     {
         $this->stock = $stock;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PromoCode>
+     */
+    public function getPromoCodes(): Collection
+    {
+        return $this->promoCodes;
+    }
+
+    public function addPromoCode(PromoCode $promoCode): static
+    {
+        if (!$this->promoCodes->contains($promoCode)) {
+            $this->promoCodes->add($promoCode);
+            $promoCode->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removePromoCode(PromoCode $promoCode): static
+    {
+        if ($this->promoCodes->removeElement($promoCode)) {
+            // set the owning side to null (unless already changed)
+            if ($promoCode->getProduct() === $this) {
+                $promoCode->setProduct(null);
+            }
+        }
 
         return $this;
     }

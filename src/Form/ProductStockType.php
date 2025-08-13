@@ -16,7 +16,6 @@ class ProductStockType extends AbstractType
         $builder
             ->add('stock', IntegerType::class, [
                 'label' => 'Nouveau stock',
-                'mapped' => false,
                 'attr' => [
                     'class' => 'form-control',
                     'min' => 0,

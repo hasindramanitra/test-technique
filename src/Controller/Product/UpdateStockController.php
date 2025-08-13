@@ -16,7 +16,7 @@ class UpdateStockController extends AbstractController
     public function __invoke(Product $product, Request $request, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ProductStockType::class, $product);
-
+        $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 

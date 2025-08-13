@@ -13,32 +13,33 @@ class ExportProductsController extends AbstractController
     public function __invoke(ProductExporter $productExporter): Response
     {
         try {
-            $result = $productExporter->exportToCsv();
+            // Récupérer les statistiques pour les flash messages
+            $stats = $productExporter->getExportStats();
 
             $this->addFlash('success', sprintf(
-                'Export réussi ! %d produits exportés dans le fichier %s',
-                $result['total_products'],
-                $result['filename']
+                'Export réussi ! %d produits exportés',
+                $stats['total_products']
             ));
 
-            if ($result['out_of_stock'] > 0) {
+            if ($stats['out_of_stock'] > 0) {
                 $this->addFlash('warning', sprintf(
                     '%d produit(s) en rupture de stock détecté(s)',
-                    $result['out_of_stock']
+                    $stats['out_of_stock']
                 ));
             }
 
-            if ($result['low_stock'] > 0) {
+            if ($stats['low_stock'] > 0) {
                 $this->addFlash('info', sprintf(
                     '%d produit(s) en stock faible détecté(s)',
-                    $result['low_stock']
+                    $stats['low_stock']
                 ));
             }
 
+            // Télécharger le CSV
+            return $productExporter->exportToCsv();
         } catch (\Exception $e) {
             $this->addFlash('error', 'Erreur lors de l\'export : ' . $e->getMessage());
+            return $this->redirectToRoute('product_list');
         }
-
-        return $this->redirectToRoute('product_list');
     }
 }
