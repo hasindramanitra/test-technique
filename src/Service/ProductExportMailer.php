@@ -14,6 +14,13 @@ class ProductExportMailer
     }
 
 
+    /**
+     * send the mail to the user
+     *
+     * @param string $email
+     * @param string $csvContent
+     * @return void
+     */
     public function sendExport(string $email, string $csvContent): void
     {
         $emailMessage = (new Email())
