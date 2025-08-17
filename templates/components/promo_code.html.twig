@@ -1,0 +1,23 @@
+<div {{ attributes }}>
+	<h5>Appliquer un code promo</h5>
+
+	<form data-action="live#action" data-live-action-param="apply" class="d-flex gap-2" onsubmit="event.preventDefault()">
+		<input type="text" class="form-control" placeholder="Entrez votre code promo" data-model="name" value="{{ name }}">
+		<button type="submit" class="btn btn-primary">Appliquer</button>
+
+	</form>
+	<div class="mt-2 text-info" data-loading data-loading-target="apply">
+		⏳ Vérification du code promo...
+	</div>
+
+	{% if message %}
+		<div class="alert {{ success ? 'alert-success' : 'alert-danger' }} mt-3">
+			{{ message }}
+			{% if discountedPrice %}
+				<br>Prix remisé :
+				<strong>{{ discountedPrice|number_format(2, '.', ' ') }}
+					€</strong>
+			{% endif %}
+		</div>
+	{% endif %}
+</div>

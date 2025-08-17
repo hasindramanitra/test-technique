@@ -1,26 +1,21 @@
-# 🧪 Test technique – Développeur Symfony
+# Projet Symfony - Code Promo & Export Produits
 
-Bienvenue sur ce test. Il vise à évaluer tes compétences Symfony dans un contexte réaliste.
+## Installation
+1. Cloner le projet :
+   ```bash
+   git clone https://github.com/mon-repo.git
+   cd mon-repo
 
----
+   composer install
+   npm install && npm run dev
 
-## Objectifs
-- Produire du code clair, propre et maintenable
-- Manipuler Symfony, Doctrine, Twig et l’architecture MVC
-- Lire et corriger du code existant
-- Appliquer de bonnes pratiques (validation, services, séparation des responsabilités)
+## Lancer l'environnement Docker
+docker-compose up -d
 
----
+## Acceder a mailpit
+http://localhost:8025/
 
-## Contexte du projet
-
-Tu es dans une petite application de gestion de **produits**.
-
-Elle contient :
-- une entité `Product` (nom, prix, stock, description)
-- une structure MVC avec un contrôleur **par action** (ex : `ListProductsController`, `ShowProductController`, etc.)
-- un système de templates Twig minimal
-- un jeu de données fourni via fixtures
-- un environnement Docker prêt à l'emploi
-
-> Tu peux démarrer le projet en lançant le docker et le serveur Symfony
+## Preparer la base de donnees
+php bin/console doctrine:database:create --if-not-exists
+php bin/console doctrine:migrations:migrate -n
+php bin/console doctrine:fixtures:load -n

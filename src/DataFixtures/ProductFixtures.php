@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Product;
+use App\Entity\PromoCode;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -13,7 +14,6 @@ class ProductFixtures extends Fixture
     {
         $faker = Factory::create('fr_FR');
 
-        // Produits avec des données variées et réalistes
         $products = [
             [
                 'name' => 'MacBook Pro 16"',
@@ -35,7 +35,7 @@ class ProductFixtures extends Fixture
             ],
             [
                 'name' => 'Clavier mécanique Keychron K2',
-                'description' => null, // Pas de description pour tester le champ nullable
+                'description' => null,
                 'price' => 89.99,
                 'stock' => 0
             ],
@@ -47,26 +47,45 @@ class ProductFixtures extends Fixture
             ]
         ];
 
-        // Ajout des produits prédéfinis
         foreach ($products as $productData) {
             $product = new Product();
             $product->setName($productData['name'])
-                    ->setDescription($productData['description'])
-                    ->setPrice($productData['price'])
-                    ->setStock($productData['stock']);
+                ->setDescription($productData['description'])
+                ->setPrice($productData['price'])
+                ->setStock($productData['stock']);
 
             $manager->persist($product);
+
+            // Ajouter 1 ou 2 codes promos pour chaque produit
+            for ($i = 0; $i < mt_rand(1, 2); $i++) {
+                $promo = new PromoCode();
+                $promo->setName(strtoupper($faker->lexify('PROMO???')))
+                    ->setDiscountPercentage($faker->numberBetween(5, 30))
+                    ->setExpiresAt($faker->dateTimeBetween('now', '+3 months'))
+                    ->setProduct($product);
+
+                $manager->persist($promo);
+            }
         }
 
-        // Génération de 5 produits supplémentaires avec Faker pour plus de variété
+        // Produits supplémentaires aléatoires
         for ($i = 0; $i < 5; $i++) {
             $product = new Product();
             $product->setName($faker->words(3, true))
-                    ->setDescription($faker->optional(0.8)->paragraph()) // 80% de chance d'avoir une description
-                    ->setPrice($faker->randomFloat(2, 9.99, 999.99))
-                    ->setStock($faker->numberBetween(0, 50));
+                ->setDescription($faker->optional(0.8)->paragraph())
+                ->setPrice($faker->randomFloat(2, 9.99, 999.99))
+                ->setStock($faker->numberBetween(0, 50));
 
             $manager->persist($product);
+
+            // Ajouter un code promo aléatoire
+            $promo = new PromoCode();
+            $promo->setName(strtoupper($faker->lexify('PROMO???')))
+                ->setDiscountPercentage($faker->numberBetween(5, 25))
+                ->setExpiresAt($faker->dateTimeBetween('now', '+6 months'))
+                ->setProduct($product);
+
+            $manager->persist($promo);
         }
 
         $manager->flush();
